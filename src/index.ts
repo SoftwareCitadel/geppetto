@@ -1,14 +1,10 @@
 import Geppetto from "./geppetto";
 
-const geppetto = new Geppetto();
-await geppetto.run(
-  `Create a new Adonis application with the name '2d6',
-  that allows to register characters for a role-playing game.
+const requirements = prompt("Describe your project requirements:");
+if (requirements === null) {
+  console.error("Please provide a description of your project requirements");
+  process.exit(1);
+}
 
-  Each character should have the following attributes:
-  - name: string ;
-  - nationality: string ;
-  - age: number ; 
-  - gender: string.
-  `
-);
+const geppetto = new Geppetto();
+await geppetto.run(requirements);
