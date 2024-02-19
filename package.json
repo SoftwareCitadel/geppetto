@@ -1,0 +1,20 @@
+{
+  "name": "geppetto",
+  "module": "src/index.ts",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "@types/pluralize": "^0.0.33",
+    "change-case": "^5.4.3",
+    "openai": "^4.28.0",
+    "openai-node": "^1.0.5",
+    "pino": "^8.19.0",
+    "pino-pretty": "^10.3.1",
+    "pluralize": "^8.0.0"
+  }
+}
