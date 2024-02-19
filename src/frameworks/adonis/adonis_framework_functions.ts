@@ -181,14 +181,14 @@ export default class AdonisFrameworkFunctions extends AiFunctionsWrapper {
     };
   }
 
-  @AiFunction("Append a route to the routes file of the AdonisJS application", {
+  @AiFunction("Fill the routes file with the contents of a route", {
     type: "object",
     properties: {
       applicationName: { type: "string" },
       routeContents: { type: "string" },
     },
   })
-  static async appendToRoutesFile({
+  static async fillRoutesFile({
     applicationName,
     routeContents,
   }: {
@@ -196,7 +196,7 @@ export default class AdonisFrameworkFunctions extends AiFunctionsWrapper {
     routeContents: string;
   }) {
     const result =
-      await $`echo ${routeContents} >> output/${applicationName}/start/routes.ts`;
+      await $`echo ${routeContents} > output/${applicationName}/start/routes.ts`;
     return result.stdout.toString();
   }
 }
