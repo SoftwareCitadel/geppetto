@@ -7,8 +7,11 @@ type FileContent = string;
 type ExampleCodebase = Record<FilePath, FileContent>;
 
 export default class AdonisFramework extends AdonisFrameworkFunctions {
-  async loadExample(): Promise<ExampleCodebase> {
-    const exampleBasePath = "./src/frameworks/adonis/examples/small_todo_api";
+  async loadExample(type: "webapp" | "api"): Promise<ExampleCodebase> {
+    const exampleBasePath =
+      type === "webapp"
+        ? "./src/frameworks/adonis/examples/demo_expenses_management_webapp"
+        : "./src/frameworks/adonis/examples/small_todo_api";
     const example: ExampleCodebase = {};
 
     /**

@@ -7,15 +7,22 @@ import pluralize from "pluralize";
 export default class AdonisFrameworkFunctions extends AiFunctionsWrapper {
   @AiFunction("Scaffold some AdonisJS v6 application in the output directory", {
     type: "object",
-    properties: { applicationName: { type: "string" } },
+    properties: {
+      applicationName: { type: "string" },
+      type: { type: "string", enum: ["webapp", "api"] },
+    },
   })
   static async scaffoldAdonisApp({
     applicationName,
+    type,
   }: {
     applicationName: string;
+    type: "webapp" | "api";
   }) {
     const result =
-      await $`cd output && npm init adonisjs@latest ${applicationName} -- -K=api --install > /dev/null && echo 'AdonisJS app scaffolded'`;
+      await $`cd output && npm init adonisjs@latest ${applicationName} -- -K=${
+        type === "webapp" ? "web" : "api"
+      } --install > /dev/null && echo 'AdonisJS app scaffolded'`;
     return {
       stdout: result.stdout.toString(),
       stderr: result.stderr.toString(),
@@ -197,6 +204,70 @@ export default class AdonisFrameworkFunctions extends AiFunctionsWrapper {
   }) {
     const result =
       await $`echo ${routeContents} > output/${applicationName}/start/routes.ts`;
+    return result.stdout.toString();
+  }
+
+  @AiFunction(
+    "Fill view file with contents (made for frontend partials, components, pages, ... using the Edge template engine)",
+    {
+      type: "object",
+      properties: {
+        applicationName: { type: "string" },
+        viewFilePath: { type: "string" },
+        viewContents: { type: "string" },
+      },
+    }
+  )
+  static async fillViewFile({
+    applicationName,
+    viewFilePath,
+    viewContents,
+  }: {
+    applicationName: string;
+    viewFilePath: string;
+    viewContents: string;
+  }) {
+    const result =
+      await $`echo ${viewContents} > output/${applicationName}/resources/views/${viewFilePath}`;
+    return result.stdout.toString();
+  }
+
+  @AiFunction(
+    "Install Tailwind CSS dependencies and set it into the resources/css/app.css file",
+    {
+      type: "object",
+      properties: { applicationName: { type: "string" } },
+    }
+  )
+  static async setupTailwindCSS({
+    applicationName,
+  }: {
+    applicationName: string;
+  }) {
+    const result =
+      await $`cd output/${applicationName} && npm install tailwindcss postcss autoprefixer && npx tailwindcss init -p`;
+
+    const appCssPath = "resources/css/app.css";
+    await Bun.write(
+      `@tailwind base;\n @tailwind components;\n @tailwind utilities;`,
+      `output/${applicationName}/${appCssPath}`
+    );
+
+    /**
+     * Configure the tailwind.config.js for content to use .edge files
+     */
+    const tailwindConfigPath = "tailwind.config.js";
+    const tailwindConfigContents = await Bun.file(
+      `output/${applicationName}/${tailwindConfigPath}`
+    ).text();
+    await Bun.write(
+      tailwindConfigContents.replace(
+        "content: [],",
+        "content: ['./resources/views/**/*.edge'],"
+      ),
+      `output/${applicationName}/${tailwindConfigPath}`
+    );
+
     return result.stdout.toString();
   }
 }

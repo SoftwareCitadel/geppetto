@@ -9,13 +9,13 @@ export default class Geppetto {
   #logger = Pino(PinoPretty());
   #framework = AdonisFramework;
 
-  async run(prompt: string) {
+  async run(prompt: string, type: "webapp" | "api") {
     const functions = {
       ...GeppettoAiFunctions.functions,
       ...this.#framework.functions,
     };
 
-    const example = await new this.#framework().loadExample();
+    const example = await new this.#framework().loadExample(type);
 
     const runner = this.#openai.beta.chat.completions
       .runTools({
